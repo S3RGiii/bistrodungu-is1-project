@@ -1,0 +1,40 @@
+<div class="container">
+  <h2>Pedidos</h2>
+
+  @if (loading) {
+    <p>Cargando...</p>
+  }
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  @if (!loading && orders.length === 0) {
+    <p>No hay pedidos registrados.</p>
+  }
+
+  @if (orders.length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Email</th>
+          <th>Total</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of orders; track o.id) {
+          <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.customerName }}</td>
+            <td>{{ o.customerEmail }}</td>
+            <td>{{ o.total | currency:'USD' }}</td>
+            <td><span [class]="'status-' + o.status?.toLowerCase()">{{ o.status }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

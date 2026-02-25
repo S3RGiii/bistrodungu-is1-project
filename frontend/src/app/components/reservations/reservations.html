@@ -1,0 +1,42 @@
+<div class="container">
+  <h2>Reservaciones</h2>
+
+  @if (loading) {
+    <p>Cargando...</p>
+  }
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  @if (!loading && reservations.length === 0) {
+    <p>No hay reservaciones registradas.</p>
+  }
+
+  @if (reservations.length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Email</th>
+          <th>Fecha</th>
+          <th>Huéspedes</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of reservations; track r.id) {
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.customerName }}</td>
+            <td>{{ r.customerEmail }}</td>
+            <td>{{ r.reservationDate | date:'medium' }}</td>
+            <td>{{ r.numberOfGuests }}</td>
+            <td><span [class]="'status-' + r.status?.toLowerCase()">{{ r.status }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

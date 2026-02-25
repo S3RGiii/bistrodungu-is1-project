@@ -1,0 +1,38 @@
+<div class="container">
+  <h2>Mesas</h2>
+
+  @if (loading) {
+    <p>Cargando...</p>
+  }
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  @if (!loading && tables.length === 0) {
+    <p>No hay mesas registradas.</p>
+  }
+
+  @if (tables.length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número de Mesa</th>
+          <th>Capacidad</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of tables; track t.id) {
+          <tr>
+            <td>{{ t.id }}</td>
+            <td>{{ t.tableNumber }}</td>
+            <td>{{ t.capacity }}</td>
+            <td><span [class]="'status-' + t.status?.toLowerCase()">{{ t.status }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
