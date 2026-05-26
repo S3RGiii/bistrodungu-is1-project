@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bistrodungu-postgres
+    environment:
+      POSTGRES_DB: bistrodungu
+      POSTGRES_USER: bistro_user
+      POSTGRES_PASSWORD: secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bistrodungu-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bistro_user -d bistrodungu"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: bistrodungu-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bistrodungu-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bistrodungu-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bistrodungu
+      SPRING_DATASOURCE_USERNAME: bistro_user
+      SPRING_DATASOURCE_PASSWORD: secure_password
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-my-super-secret-key-that-should-be-at-least-32-characters-long}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - bistrodungu-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  bistrodungu-network:
+    driver: bridge
